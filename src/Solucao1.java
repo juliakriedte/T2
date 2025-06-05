@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class App {
+public class Solucao1 {
     public static void main(String[] args) {
         String caminhoArquivoCoordenadas = "../T2/src/CasosTeste/mapa80.txt";
         String caminhoArquivoArestas = "../T2/src/Arestas.txt";
@@ -41,6 +41,8 @@ public class App {
         EdgeWeightedDigraph g = new EdgeWeightedDigraph(caminhoArquivoArestas);
         List<String> portosOrdenados = new ArrayList<>(portos.keySet());
         Collections.sort(portosOrdenados);
+
+        System.out.println(portos);
 
         String ultimoVisitado = "";
 

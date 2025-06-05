@@ -81,15 +81,16 @@ public class Dijkstra {
 
         Direcoes direcaoAtual = dirTo.get(v);
         Direcoes proxDirecao = descobrirDirecao(v, w);
-
         int penalidade = (direcaoAtual != Direcoes.INICIAL && direcaoAtual != proxDirecao) ? 2 : 0;
-        double edgeWeight = distTo.get(v) + e.getWeight() + penalidade;
+        double calcularDistManhattan = calcularDistManhattan(v, w);
+        double edgeWeight = distTo.get(v) + e.getWeight() + penalidade + calcularDistManhattan;
         
         if (distTo.get(w) + penalidade > edgeWeight) {
             // Achei um caminho melhor!
             distTo.put(w, edgeWeight);
             edgeTo.put(w, e);
-            dirTo.put(w, proxDirecao);
+            dirTo.replace(v, direcaoAtual);
+            dirTo.replace(w, proxDirecao);
             if (!pq.contains(w))
                 // Não existe, insere na fila
                 pq.insert(w, edgeWeight);
@@ -116,4 +117,14 @@ public class Dijkstra {
         }
         return Direcoes.INICIAL;
     }
+
+    private double calcularDistManhattan(String atual, String destino) {
+        int linhaA = Integer.parseInt(atual.substring(0, atual.indexOf('x')));
+        int colunaA = Integer.parseInt(atual.substring(atual.indexOf('x') + 1));
+        int linhaD = Integer.parseInt(destino.substring(0, destino.indexOf('x')));
+        int colunaD = Integer.parseInt(destino.substring(destino.indexOf('x') + 1));
+
+        return Math.abs(linhaA - linhaD) + Math.abs(colunaA - colunaD);
+    }
+
 }
