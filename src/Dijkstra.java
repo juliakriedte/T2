@@ -38,7 +38,8 @@ public class Dijkstra {
     }
 
     public boolean hasPathTo(String v) {
-        return distTo.get(v) != Double.POSITIVE_INFINITY;
+        Double dist = distTo.get(v);
+        return dist != null && dist != Double.POSITIVE_INFINITY;
 
     }
 

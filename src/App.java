@@ -3,16 +3,22 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.foreign.PaddingLayout;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 public class App {
     public static void main(String[] args) {
-        String caminhoArquivoCoordenadas = "../T2/src/Coordenadas.txt";
+        String caminhoArquivoCoordenadas = "../T2/src/CasosTeste/mapa80.txt";
         String caminhoArquivoArestas = "../T2/src/Arestas.txt";
+
         Map<String, String> portos = null;
         char[][] mapa = null;
+        double custoTotal = 0.0;
 
         try {
             mapa = entradaDados(caminhoArquivoCoordenadas);
@@ -28,26 +34,39 @@ public class App {
         }
 
         EdgeWeightedDigraph g = new EdgeWeightedDigraph(caminhoArquivoArestas);
-        Dijkstra dij = new Dijkstra(g, portos.get("1"));
+        List<String> portosOrdenados = new ArrayList<>(portos.keySet());
+        Collections.sort(portosOrdenados);
 
-       for (Edge e : dij.pathTo(portos.get("2"))) {
-            System.out.print(e + " ");
+        String ultimoVisitado = "";
+
+        System.out.println("Custos");
+        for (int i = 0; i < portosOrdenados.size(); i++) {
+            String origem = portosOrdenados.get(i);
+            String destino = portosOrdenados.get((i + 1) % portosOrdenados.size());
+
+            if(ultimoVisitado != "" && ultimoVisitado != origem){
+                origem = ultimoVisitado;
+            }
+
+            Dijkstra dij = new Dijkstra(g, portos.get(origem));
+            String rotuloDestino = portos.get(destino);
+
+            if (!dij.hasPathTo(rotuloDestino)) {
+                System.out.println("Porto inacessível: de " + origem + " para " + destino);
+            } else {
+                for (Edge e : dij.pathTo(rotuloDestino)) {
+                    // System.out.println(e);
+                    // Gerar uma matriz com os caminhos e os portos? Validar com o prof.
+                }
+                System.out.println(origem + " -> " + destino + ": " + dij.getCombustivel());
+                custoTotal += dij.getCombustivel();
+                ultimoVisitado = destino;
+            }
         }
-        System.out.println("- " + dij.distTo(portos.get("2")));
-        System.err.println("Combustivel gasto total: "+dij.getCombustivel());
 
-        // for (String v : g.getVerts()) {
-        //     System.out.print(v + ": ");
-        //     if (!dij.hasPathTo(v))
-        //         System.out.println("Sem caminho!");
-        //     else {
-        //         for (Edge e : dij.pathTo(v)) {
-        //             System.out.print(e + " ");
-        //         }
-        //         System.out.println("- " + dij.distTo(v));
-        //     }
-        // }
+        System.out.println("Custo total: " + custoTotal);
     }
+
     private static char[][] entradaDados(String caminhoArquivo) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo));
         String linha = br.readLine();
@@ -131,5 +150,4 @@ public class App {
         writer.write(linha);
         writer.newLine();
     }
-
 }
