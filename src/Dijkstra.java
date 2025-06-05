@@ -85,7 +85,7 @@ public class Dijkstra {
         int penalidade = (direcaoAtual != Direcoes.INICIAL && direcaoAtual != proxDirecao) ? 2 : 0;
         double edgeWeight = distTo.get(v) + e.getWeight() + penalidade;
         
-        if (distTo.get(w) > edgeWeight) {
+        if (distTo.get(w) + penalidade > edgeWeight) {
             // Achei um caminho melhor!
             distTo.put(w, edgeWeight);
             edgeTo.put(w, e);

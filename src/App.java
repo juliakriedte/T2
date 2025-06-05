@@ -3,12 +3,13 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.foreign.PaddingLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public class App {
@@ -18,10 +19,12 @@ public class App {
 
         Map<String, String> portos = null;
         char[][] mapa = null;
+        char[][] mapaCaminhos = null;
         double custoTotal = 0.0;
 
         try {
             mapa = entradaDados(caminhoArquivoCoordenadas);
+            mapaCaminhos = new char[mapa.length][mapa[0].length];
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -32,6 +35,8 @@ public class App {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        limparMatriz(mapaCaminhos);
 
         EdgeWeightedDigraph g = new EdgeWeightedDigraph(caminhoArquivoArestas);
         List<String> portosOrdenados = new ArrayList<>(portos.keySet());
@@ -44,7 +49,7 @@ public class App {
             String origem = portosOrdenados.get(i);
             String destino = portosOrdenados.get((i + 1) % portosOrdenados.size());
 
-            if(ultimoVisitado != "" && ultimoVisitado != origem){
+            if(!ultimoVisitado.equals("") && !ultimoVisitado.equals(origem)){
                 origem = ultimoVisitado;
             }
 
@@ -54,13 +59,23 @@ public class App {
             if (!dij.hasPathTo(rotuloDestino)) {
                 System.out.println("Porto inacessível: de " + origem + " para " + destino);
             } else {
+                limparMatriz(mapaCaminhos);
                 for (Edge e : dij.pathTo(rotuloDestino)) {
-                    // System.out.println(e);
-                    // Gerar uma matriz com os caminhos e os portos? Validar com o prof.
+                    int linha = Integer.parseInt(e.getV().substring(0, e.getV().indexOf('x')));
+                    int coluna = Integer.parseInt(e.getV().substring(e.getV().indexOf('x') + 1));
+                    
+                    if(portos.containsValue(e.getV())){
+                        mapaCaminhos[linha][coluna] = procurarChave(portos, e.getV());
+                    } else if(portos.containsValue(e.getW())){
+                        mapaCaminhos[linha][coluna] = procurarChave(portos, e.getW());
+                    } else {
+                        mapaCaminhos[linha][coluna] = '.';
+                    }
                 }
                 System.out.println(origem + " -> " + destino + ": " + dij.getCombustivel());
                 custoTotal += dij.getCombustivel();
                 ultimoVisitado = destino;
+                imprimirMatriz(mapaCaminhos);
             }
         }
 
@@ -149,5 +164,32 @@ public class App {
         String linha = String.format("%s %s %.1f", rotulo1, rotulo2, peso);
         writer.write(linha);
         writer.newLine();
+    }
+
+    private static char[][] limparMatriz (char[][] m){
+        for (int i = 0; i < m.length; i++) {
+            for (int j = 0; j < m[0].length; j++) {
+                m[i][j] = ' ';
+            }
+        }
+        return m;
+    }
+    
+    private static void imprimirMatriz (char[][] m){
+        for (int i = 0; i < m.length; i++) {
+            for (int j = 0; j < m[0].length; j++) {
+                System.out.print(m[i][j]+ "");
+            }
+            System.out.println("");
+        }
+    }
+
+    private static char procurarChave(Map<String, String> map, String value){
+        for (String key : map.keySet()) {
+            if (map.get(key).equals(value)) {
+                return key.charAt(0);
+            }
+        }
+        return ' ';
     }
 }
