@@ -3,6 +3,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.invoke.StringConcatFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,9 +13,9 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class Solucao1 {
+public class App {
     public static void main(String[] args) {
-        String caminhoArquivoCoordenadas = "../T2/src/CasosTeste/mapa80.txt";
+        String caminhoArquivoCoordenadas = "../T2/src/CasosTeste/mapa30.txt";
         String caminhoArquivoArestas = "../T2/src/Arestas.txt";
 
         Map<String, String> portos = null;
@@ -42,8 +43,6 @@ public class Solucao1 {
         List<String> portosOrdenados = new ArrayList<>(portos.keySet());
         Collections.sort(portosOrdenados);
 
-        System.out.println(portos);
-
         String ultimoVisitado = "";
 
         System.out.println("Custos");
@@ -66,10 +65,10 @@ public class Solucao1 {
                     int linha = Integer.parseInt(e.getV().substring(0, e.getV().indexOf('x')));
                     int coluna = Integer.parseInt(e.getV().substring(e.getV().indexOf('x') + 1));
                     
-                    if(portos.containsValue(e.getV())){
+                    if(e.getV().equals(portos.get(origem))){
                         mapaCaminhos[linha][coluna] = procurarChave(portos, e.getV());
-                    } else if(portos.containsValue(e.getW())){
-                        mapaCaminhos[linha][coluna] = procurarChave(portos, e.getW());
+                    } else if(e.getW().equals(portos.get(destino))){
+                        mapaCaminhos[linha][coluna] = destino.charAt(0);
                     } else {
                         mapaCaminhos[linha][coluna] = '.';
                     }
